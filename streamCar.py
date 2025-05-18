@@ -29,7 +29,8 @@ def set_background(image_file):
     st.markdown(css, unsafe_allow_html=True)
 
 # Set wallpaper with relative path
-set_background("car.jpg")
+set_background(r"images/car.jpg")
+
 
 
 def authenticate_user(username, password, role):
