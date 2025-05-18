@@ -12,7 +12,6 @@ def connect_db():
         database="car"
     )
 
-# Set background image
 def set_background(image_file):
     with open(image_file, "rb") as image:
         encoded = base64.b64encode(image.read()).decode()
@@ -29,8 +28,9 @@ def set_background(image_file):
     """
     st.markdown(css, unsafe_allow_html=True)
 
-# Set wallpaper
-set_background(r"D:\New folder\car.jpg")
+# Set wallpaper with relative path
+set_background("car.jpg")
+
 
 def authenticate_user(username, password, role):
     conn = connect_db()
