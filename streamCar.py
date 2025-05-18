@@ -15,11 +15,12 @@ from datetime import datetime
     
 def connect_db():
     return mysql.connector.connect(
-        host=st.secrets["mysql"]["database-clo.cb6sc28iszmw.eu-north-1.rds.amazonaws.com"],
-        user=st.secrets["mysql"]["admin"],
-        password=st.secrets["mysql"]["3306"],
-        database=st.secrets["mysql"]["car"]
-        )
+        host=st.secrets["mysql"]["host"],
+        user=st.secrets["mysql"]["user"],
+        password=st.secrets["mysql"]["password"],
+        database=st.secrets["mysql"]["database"]
+    )
+
 
 def set_background(image_file):
     with open(image_file, "rb") as image:
