@@ -4,13 +4,22 @@ import base64
 import pandas as pd
 from datetime import datetime
 
+# def connect_db():
+#     mysql_config = st.secrets["mysql"]
+#     return mysql.connector.connect(
+#         host=mysql_config["database-clo.cb6sc28iszmw.eu-north-1.rds.amazonaws.com"],
+#         user=mysql_config["admin"],
+#         password=mysql_config["3306"],
+#         database=mysql_config["car"]
+#     )
+    
 def connect_db():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="3306",
-        database="car"
-    )
+        host=st.secrets["mysql"]["database-clo.cb6sc28iszmw.eu-north-1.rds.amazonaws.com"],
+        user=st.secrets["mysql"]["admin"],
+        password=st.secrets["mysql"]["3306"],
+        database=st.secrets["mysql"]["car"]
+        )
 
 def set_background(image_file):
     with open(image_file, "rb") as image:
@@ -30,8 +39,6 @@ def set_background(image_file):
 
 # Set wallpaper with relative path
 set_background(r"images/car.jpg")
-
-
 
 def authenticate_user(username, password, role):
     conn = connect_db()
@@ -270,7 +277,6 @@ def login_page():
         st.subheader("Register")
         new_user = st.text_input("New Username")
         new_pass = st.text_input("New Password", type="password")
-        role = st.selectbox("Role", ["Admin", "Customer"])
 
         if st.button("Register"):
             if not new_user or not new_pass:
@@ -278,31 +284,23 @@ def login_page():
             else:
                 conn = connect_db()
                 cursor = conn.cursor()
-                # Check for existing username
-                if role == "Admin":
-                    cursor.execute("SELECT * FROM admin WHERE username=%s", (new_user,))
-                else:
-                    cursor.execute("SELECT * FROM customer WHERE username=%s", (new_user,))
+                # Check for existing username in customer table only
+                cursor.execute("SELECT * FROM customer WHERE username=%s", (new_user,))
 
                 if cursor.fetchone():
                     st.warning(f"Username '{new_user}' already exists. Please choose a different username.")
                 else:
                     try:
-                        if role == "Admin":
-                            cursor.execute(
-                                "INSERT INTO admin (username, password) VALUES (%s, %s)",
-                                (new_user, new_pass)
-                            )
-                        elif role == "Customer":
-                            cursor.execute(
-                                "INSERT INTO customer (username, password) VALUES (%s, %s)",
-                                (new_user, new_pass)
-                            )
+                        cursor.execute(
+                            "INSERT INTO customer (username, password) VALUES (%s, %s)",
+                            (new_user, new_pass)
+                        )
                         conn.commit()
-                        st.success(f"{role} registered successfully.")
+                        st.success("Customer registered successfully.")
                     except Exception as e:
                         st.error(f"Error: {e}")
                 conn.close()
+
 
 def main():
     # Initialize session state variables
